@@ -1,0 +1,55 @@
+name: Liquibase CI
+
+on:
+  push:
+    branches: [ "main" ]   # Se ejecuta cuando haces push a main
+
+jobs:
+  liquibase:
+    runs-on: ubuntu-latest  # Máquina donde corre el workflow
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Johan123
+          POSTGRES_DB: mini_proyect
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d mini_proyect"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        # Levanta PostgreSQL y espera a que esté listo
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        # Descarga tu repositorio
+
+      - name: Descargar Liquibase
+        run: |
+          curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
+        # Descarga Liquibase (queda en ./liquibase/)
+
+      - name: Esperar PostgreSQL
+        run: |
+          for i in {1..10}; do
+            nc -z localhost 5432 && echo "Postgres listo" && exit 0
+            echo "Esperando PostgreSQL..."
+            sleep 3
+          done
+          echo "Postgres no respondió" && exit 1
+        # Verifica que la BD esté lista
+
+      - name: Ejecutar Liquibase
+        run: |
+          ./liquibase/liquibase \
+          --url=jdbc:postgresql://localhost:5432/mini_proyect \
+          --username=postgres \
+          --password=Johan123 \
+          --changeLogFile=changelog-master.yaml \
+          update
+        # Ejecuta tus scripts de BD
