@@ -29,27 +29,17 @@ jobs:
         uses: actions/checkout@v4
         # Descarga tu repositorio
 
-      - name: Descargar Liquibase
+      - name: Ejecutar Liquibase con Docker
         run: |
-          curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
-        # Descarga Liquibase (queda en ./liquibase/)
-
-      - name: Esperar PostgreSQL
-        run: |
-          for i in {1..10}; do
-            nc -z localhost 5432 && echo "Postgres listo" && exit 0
-            echo "Esperando PostgreSQL..."
-            sleep 3
-          done
-          echo "Postgres no respondió" && exit 1
-        # Verifica que la BD esté lista
-
-      - name: Ejecutar Liquibase
-        run: |
-          ./liquibase/liquibase \
-          --url=jdbc:postgresql://localhost:5432/mini_proyect \
-          --username=postgres \
-          --password=Johan123 \
-          --changeLogFile=changelog-master.yaml \
-          update
-        # Ejecuta tus scripts de BD
+          docker run --rm \
+            --network host \
+            -v ${{ github.workspace }}:/liquibase/changelog \
+            -v ${{ github.workspace }}/postgresql-42.7.9.jar:/liquibase/lib/postgresql.jar \
+            liquibase/liquibase:4.27.0 \
+            --url=jdbc:postgresql://localhost:5432/mini_proyect \
+            --username=postgres \
+            --password=Johan123 \
+            --driver=org.postgresql.Driver \
+            --changeLogFile=changelog-master.yaml \
+            update
+        # Ejecuta Liquibase dentro de Docker (SIN instalarlo manualmente)
