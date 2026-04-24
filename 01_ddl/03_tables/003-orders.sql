@@ -1,7 +1,7 @@
 CREATE TABLE orders (
-    id_order INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    product_id INT NOT NULL,
+    id_order uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    product_id uuid NOT NULL,
     total DECIMAL(10,2),
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),

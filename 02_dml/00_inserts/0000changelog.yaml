@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: 004-insert-users
+      id: 005-insert-users
       author: JohanAceroSalazar
-      labels: HU-04
+      labels: HU-05
       comment: insert users data
       changes:
         - sqlFile:
@@ -16,9 +16,9 @@ databaseChangeLog:
             splitStatements: false
 
   - changeSet:
-      id: 005-insert-products
+      id: 006-insert-products
       author: JohanAceroSalazar
-      labels: HU-05
+      labels: HU-06
       comment: insert products data
       changes:
         - sqlFile:
@@ -32,9 +32,9 @@ databaseChangeLog:
             splitStatements: false
 
   - changeSet:
-      id: 006-insert-orders
+      id: 007-insert-orders
       author: JohanAceroSalazar
-      labels: HU-06
+      labels: HU-07
       comment: insert orders data
       changes:
         - sqlFile:

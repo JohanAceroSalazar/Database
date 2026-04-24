@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: 001-users
+      id: 002-users
       author: JohanAceroSalazar
-      labels: HU-01
+      labels: HU-02
       comment: create users table
       changes:
         - sqlFile:
@@ -15,9 +15,9 @@ databaseChangeLog:
             stripComments: false
             splitStatements: false
   - changeSet:
-      id: 002-products
+      id: 003-products
       author: JohanAceroSalazar
-      labels: HU-02
+      labels: HU-03
       comment: create products table
       changes:
         - sqlFile:
@@ -30,9 +30,9 @@ databaseChangeLog:
             stripComments: false
             splitStatements: false
   - changeSet:
-      id: 003-orders
+      id: 004-orders
       author: JohanAceroSalazar
-      labels: HU-03
+      labels: HU-04
       comment: create orders table
       changes:
         - sqlFile:

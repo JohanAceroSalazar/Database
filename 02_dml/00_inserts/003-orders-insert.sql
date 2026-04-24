@@ -1,5 +1,17 @@
-INSERT INTO orders (user_id, product_id, total) VALUES
-(1, 1, 3.500.000),
-(2, 2, 50.000),
-(3, 3, 120.000),
-(1, 2, 50.000);
+INSERT INTO orders (user_id, product_id, total)
+VALUES 
+(
+    (SELECT id_user FROM users WHERE email = 'juan@example.com'),
+    (SELECT id_product FROM products WHERE name = 'Laptop'),
+    3500.00
+),
+(
+    (SELECT id_user FROM users WHERE email = 'maria@example.com'),
+    (SELECT id_product FROM products WHERE name = 'Mouse'),
+    50.00
+),
+(
+    (SELECT id_user FROM users WHERE email = 'carlos@example.com'),
+    (SELECT id_product FROM products WHERE name = 'Teclado'),
+    120.00
+);
