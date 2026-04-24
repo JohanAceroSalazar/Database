@@ -18,24 +18,39 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres"
+          --health-cmd="pg_isready -U postgres -d mini_proyect"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout código
+        uses: actions/checkout@v3
 
-      - name: Install Liquibase
+      - name: Instalar Liquibase
         run: |
           curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
           sudo ln -s $PWD/liquibase/liquibase /usr/local/bin/liquibase
 
-      - name: Run Liquibase
+      - name: Agregar driver PostgreSQL
+        run: |
+          cp postgresql-42.7.9.jar liquibase/lib/postgresql.jar
+
+      - name: Esperar PostgreSQL
+        run: |
+          for i in {1..10}; do
+            nc -z localhost 5432 && echo "Postgres listo" && exit 0
+            echo "Esperando PostgreSQL..."
+            sleep 3
+          done
+          echo "Postgres no respondió" && exit 1
+
+      - name: Ejecutar Liquibase
         run: |
           liquibase \
           --url=jdbc:postgresql://localhost:5432/mini_proyect \
           --username=postgres \
           --password=Johan123 \
+          --driver=org.postgresql.Driver \
           --changeLogFile=changelog-master.yaml \
           update
