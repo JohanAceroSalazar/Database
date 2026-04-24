@@ -22,7 +22,7 @@ services:
       - ./:/liquibase/changelog
       - ./postgresql-42.7.9.jar:/liquibase/lib/postgresql.jar
     working_dir: /liquibase/changelog
-    command:
+    command: >
       --url=jdbc:postgresql://postgres:5432/mini_proyect
       --username=postgres
       --password=Johan123
