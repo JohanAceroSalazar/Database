@@ -40,6 +40,6 @@ jobs:
             --username=postgres \
             --password=Johan123 \
             --driver=org.postgresql.Driver \
-            --changeLogFile=changelog-master.yaml \
+            --changeLogFile=/liquibase/changelog/changelog-master.yaml \
             update
         # Ejecuta Liquibase dentro de Docker (SIN instalarlo manualmente)
