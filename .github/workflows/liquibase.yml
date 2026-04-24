@@ -27,13 +27,12 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
-        # Descarga tu repo en el runner
+        # Descarga tu repositorio
 
-      - name: Instalar Liquibase
+      - name: Descargar Liquibase
         run: |
           curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
-          sudo ln -s $PWD/liquibase/liquibase /usr/local/bin/liquibase
-        # Instala Liquibase en el entorno
+        # Descarga Liquibase (queda en ./liquibase/)
 
       - name: Esperar PostgreSQL
         run: |
@@ -43,14 +42,14 @@ jobs:
             sleep 3
           done
           echo "Postgres no respondió" && exit 1
-        # Verifica que la BD esté lista antes de ejecutar
+        # Verifica que la BD esté lista
 
       - name: Ejecutar Liquibase
         run: |
-          liquibase \
+          ./liquibase/liquibase \
           --url=jdbc:postgresql://localhost:5432/mini_proyect \
           --username=postgres \
           --password=Johan123 \
           --changeLogFile=changelog-master.yaml \
           update
-        # Ejecuta tus scripts (DDL, DML, etc.)
+        # Ejecuta tus scripts de BD
