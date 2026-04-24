@@ -1,1 +1,46 @@
-databaseChangeLog: []
+databaseChangeLog:
+  - changeSet:
+      id: 001-users
+      author: JohanAceroSalazar
+      labels: HU-01
+      comment: create users table
+      changes:
+        - sqlFile:
+            path: 01_ddl/03_tables/001-users.sql
+            stripComments: false
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: 05_rollbacks/01_ddl/03_tables/001-users-rollback.sql
+            stripComments: false
+            splitStatements: false
+  - changeSet:
+      id: 002-products
+      author: JohanAceroSalazar
+      labels: HU-02
+      comment: create products table
+      changes:
+        - sqlFile:
+            path: 01_ddl/03_tables/002-products.sql
+            stripComments: false
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: 05_rollbacks/01_ddl/03_tables/002-products-rollback.sql
+            stripComments: false
+            splitStatements: false
+  - changeSet:
+      id: 003-orders
+      author: JohanAceroSalazar
+      labels: HU-03
+      comment: create orders table
+      changes:
+        - sqlFile:
+            path: 01_ddl/03_tables/003-orders.sql
+            stripComments: false
+            splitStatements: false
+      rollback:
+        - sqlFile:
+            path: 05_rollbacks/01_ddl/03_tables/003-orders-rollback.sql
+            stripComments: false
+            splitStatements: false
