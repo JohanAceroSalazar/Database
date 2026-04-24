@@ -31,7 +31,9 @@ jobs:
 
       - name: Descargar Liquibase
         run: |
-          curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
+          curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz -o liquibase.tar.gz
+          tar -xzf liquibase.tar.gz
+          mv liquibase-4.27.0 liquibase
         # Descarga Liquibase (queda en ./liquibase/)
 
       - name: Esperar PostgreSQL
