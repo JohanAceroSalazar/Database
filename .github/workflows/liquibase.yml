@@ -2,11 +2,11 @@ name: Liquibase CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]   # Se ejecuta cuando haces push a main
 
 jobs:
   liquibase:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Máquina donde corre el workflow
 
     services:
       postgres:
@@ -22,19 +22,18 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+        # Levanta PostgreSQL y espera a que esté listo
 
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        # Descarga tu repo en el runner
 
       - name: Instalar Liquibase
         run: |
           curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
           sudo ln -s $PWD/liquibase/liquibase /usr/local/bin/liquibase
-
-      - name: Agregar driver PostgreSQL
-        run: |
-          cp postgresql-42.7.9.jar liquibase/lib/postgresql.jar
+        # Instala Liquibase en el entorno
 
       - name: Esperar PostgreSQL
         run: |
@@ -44,6 +43,7 @@ jobs:
             sleep 3
           done
           echo "Postgres no respondió" && exit 1
+        # Verifica que la BD esté lista antes de ejecutar
 
       - name: Ejecutar Liquibase
         run: |
@@ -51,6 +51,6 @@ jobs:
           --url=jdbc:postgresql://localhost:5432/mini_proyect \
           --username=postgres \
           --password=Johan123 \
-          --driver=org.postgresql.Driver \
           --changeLogFile=changelog-master.yaml \
           update
+        # Ejecuta tus scripts (DDL, DML, etc.)
