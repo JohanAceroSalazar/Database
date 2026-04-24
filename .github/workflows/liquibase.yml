@@ -1,0 +1,41 @@
+name: Liquibase CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  liquibase:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Johan123
+          POSTGRES_DB: mini_proyect
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Liquibase
+        run: |
+          curl -L https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.tar.gz | tar xz
+          sudo ln -s $PWD/liquibase/liquibase /usr/local/bin/liquibase
+
+      - name: Run Liquibase
+        run: |
+          liquibase \
+          --url=jdbc:postgresql://localhost:5432/mini_proyect \
+          --username=postgres \
+          --password=Johan123 \
+          --changeLogFile=changelog-master.yaml \
+          update
