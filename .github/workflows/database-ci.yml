@@ -1,0 +1,91 @@
+name: Database CI
+
+on:
+  # Permite ejecutarlo manualmente desde GitHub.
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "docker-compose.yml"
+      - "changelog-master.yaml"
+      - "01_ddl/**"
+      - "02_dml/**"
+      - "03_dcl/**"
+      - "04_tcl/**"
+      - "05_rollbacks/**"
+      - ".github/workflows/database-ci.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docker-compose.yml"
+      - "changelog-master.yaml"
+      - "01_ddl/**"
+      - "02_dml/**"
+      - "03_dcl/**"
+      - "04_tcl/**"
+      - "05_rollbacks/**"
+      - ".github/workflows/database-ci.yml"
+
+jobs:
+  database:
+    # Levanta PostgreSQL, valida Liquibase y ejecuta las migraciones reales.
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: mini_proyect
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Johan123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d mini_proyect"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Verifica que el changelog principal de Liquibase este bien definido.
+      - name: Validate Liquibase changelog
+        run: |
+          docker run --rm --network host \
+            -v "${{ github.workspace }}:/liquibase/changelog" \
+            -v "${{ github.workspace }}/postgresql-42.7.9.jar:/liquibase/lib/postgresql.jar" \
+            -w /liquibase/changelog \
+            liquibase/liquibase:4.29 \
+            --url=jdbc:postgresql://localhost:5432/mini_proyect \
+            --username=postgres \
+            --password=Johan123 \
+            --driver=org.postgresql.Driver \
+            --changelog-file=changelog-master.yaml \
+            validate
+
+      # Ejecuta las migraciones completas del repositorio.
+      - name: Run Liquibase migrations
+        run: |
+          docker run --rm --network host \
+            -v "${{ github.workspace }}:/liquibase/changelog" \
+            -v "${{ github.workspace }}/postgresql-42.7.9.jar:/liquibase/lib/postgresql.jar" \
+            -w /liquibase/changelog \
+            liquibase/liquibase:4.29 \
+            --url=jdbc:postgresql://localhost:5432/mini_proyect \
+            --username=postgres \
+            --password=Johan123 \
+            --driver=org.postgresql.Driver \
+            --changelog-file=changelog-master.yaml \
+            update
+
+      # Revisa que las tablas principales realmente existan despues de migrar.
+      - name: Check main tables
+        run: |
+          docker run --rm --network host \
+            -e PGPASSWORD=Johan123 \
+            postgres:16-alpine \
+            psql -h localhost -U postgres -d mini_proyect -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"
